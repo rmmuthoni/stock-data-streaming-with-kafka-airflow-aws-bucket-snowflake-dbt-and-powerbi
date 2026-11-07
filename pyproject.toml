@@ -7,7 +7,10 @@ authors = [
     { name = "rmmuthoni", email = "rogersmacharia77@gmail.com" }
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "apache-airflow==3.4.0",
+    "requests>=2.34.2",
+]
 
 [project.scripts]
 stock-data-streaming = "stock_data_streaming:main"
