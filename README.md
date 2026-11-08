@@ -21,21 +21,8 @@ Stock market data can be valuable for analysis when it is collected reliably, re
 
 ## Architecture and data flow
 
-```mermaid
-flowchart LR
-	API[Finnhub API] --> INGEST[Data ingestion]
-	INGEST --> MINIO[MinIO buckets<br/>S3-compatible staging]
-	MINIO --> LOAD[Load data]
-	LOAD --> SF[Snowflake warehouse]
-	SF --> DBT[dbt transformations]
-	DBT --> BRONZE[Bronze layer]
-	BRONZE --> SILVER[Silver layer]
-	SILVER --> GOLD[Gold datasets]
-	GOLD --> BI[Power BI reports]
-	AF[Apache Airflow] -. schedules and orchestrates .-> INGEST
-	AF -. schedules and orchestrates .-> LOAD
-	AF -. schedules and orchestrates .-> DBT
-```
+<img width="1703" height="860" alt="Stock Streaming Architecture" src="https://github.com/user-attachments/assets/445df950-8676-4351-a07b-dac96ba7cb36" />
+
 
 1. Airflow schedules the ingestion workflow.
 2. The pipeline retrieves data from Finnhub and stages it in MinIO.
