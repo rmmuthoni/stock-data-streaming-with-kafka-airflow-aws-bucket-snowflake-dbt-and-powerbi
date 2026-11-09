@@ -6,8 +6,8 @@ from pathlib import Path
 # Load Environment Variables
 load_dotenv() 
 
-def download_json_from_s3() -> list:
-    """Download JSON files from S3 bucket to local directory."""
+def download_json_from_s3(**context) -> None:
+    """Download JSON files from S3 bucket and return local paths via XCom. """
 
     # Storage Folder - Create if Not Exists
     BASE_DIR = Path(os.getenv('AIRFLOW_HOME', Path(__file__).resolve().parent.parent))
@@ -40,4 +40,5 @@ def download_json_from_s3() -> list:
         DOWNLOADED_FILES.append(str(local_json_file_name)) 
         print(local_json_file_name)  
 
-    return DOWNLOADED_FILES
+    context['ti'].xcom_push(key='downloaded_s3_files', value=DOWNLOADED_FILES)
+    
