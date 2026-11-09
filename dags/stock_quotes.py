@@ -1,14 +1,12 @@
 from airflow.sdk import DAG 
-from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
-
+from airflow.operators.python import PythonOperator
 
 def sample_task():
     print("This is a sample task.") 
 
 def another_task():
     print("This is another task.")
-
 
 
 
