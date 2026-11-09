@@ -12,6 +12,7 @@ if str(AIRFLOW_HOME) not in sys.path:
     sys.path.insert(0, str(AIRFLOW_HOME))
 
 from scripts.download_s3_json_data import download_json_from_s3
+from scripts.upload_s3_json_data_to_snowflake import upload_s3_json_data_to_snowflake
 
 
 # DAG configuration
@@ -37,5 +38,10 @@ with DAG(
         python_callable=download_json_from_s3
     )
 
+    task_upload_json_to_snowflake = PythonOperator(
+        task_id="upload_json_to_snowflake",
+        python_callable=upload_s3_json_data_to_snowflake
+    )
+
     # Dependancy
-    task_download_json_from_s3
+    task_download_json_from_s3 >> task_upload_json_to_snowflake
