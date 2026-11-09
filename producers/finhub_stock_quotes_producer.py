@@ -12,13 +12,13 @@ dotenv.load_dotenv()
 
 API_KEY = os.getenv("FINHUB_API_KEY")
 API_URL = os.getenv("FINHUB_API_URL")
-SYMBOLS = ["AAPL"]
+SYMBOLS = ["AAPL", "META", "AMZN", "NFLX", "GOOGL"]
 
+# Set up the Producer
 producer_config = {
-    "bootstrap.servers": "host.docker.internal:9092",
+    "bootstrap.servers": "localhost:29092",
     "client.id": "finhub-stock-data-producer"
 }
-
 producer = Producer(
     producer_config
 )
@@ -37,6 +37,7 @@ def fetch_stock_data(symbol: str) -> Any:
 
     try:
         response = requests.get(TARGET_URL, timeout=10)
+        # Raise 4xx and 5xx 
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         print(e)
@@ -48,6 +49,7 @@ def fetch_stock_data(symbol: str) -> Any:
         # Attach symbol and time metadata
         data["symbol"] = symbol 
         data["fetched_at"] = datetime.now().isoformat()
+        data["source_system"] = f"{API_URL}?{symbol}"
 
         print(data)
         return data
