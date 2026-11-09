@@ -1,38 +1,41 @@
+from pathlib import Path 
+import sys 
+
 from airflow.sdk import DAG 
-from datetime import datetime, timedelta
 from airflow.operators.python import PythonOperator
 
-def sample_task():
-    print("This is a sample task.") 
+from datetime import datetime, timedelta
 
-def another_task():
-    print("This is another task.")
+# HOME Path 
+AIRFLOW_HOME = Path("/opt/airflow") 
+if str(AIRFLOW_HOME) not in sys.path:
+    sys.path.insert(0, str(AIRFLOW_HOME))
+
+from scripts.download_s3_json_data import download_json_from_s3
 
 
-
+# DAG configuration
 default_args = {
     'owner': 'rmmuthoni@me.com',
-    "retry_delay": timedelta(minutes=5),
+    "retry_delay": timedelta(seconds=10),
     "retries": 3
 }
 
 with DAG(
-    dag_id="sample_dag",
+    dag_id="s3_json_file_to_snowflake_wh",
     default_args=default_args, 
-    description="A sample DAG", 
-    schedule=timedelta(seconds=30),
+    description="Downloads JSON data from S3 Bucket and uploads to Snowflake Warehouse", 
+    schedule=timedelta(minutes=10),
     start_date=datetime(2024, 6, 1), 
     catchup=False,
-    tags=["sample", "test"]
+    tags=["s3", "snowflake", "json", "downlad", "s3 to snowflake"]
 ) as dag: 
-    task1 = PythonOperator(
-        task_id="sample_task",
-        python_callable=sample_task
+
+    
+    task_download_json_from_s3 = PythonOperator(
+        task_id="download_json_from_s3",
+        python_callable=download_json_from_s3
     )
 
-    task2 = PythonOperator(
-        task_id="another_task",
-        python_callable=another_task
-    )
-
-    task1 >> task2
+    # Dependancy
+    task_download_json_from_s3

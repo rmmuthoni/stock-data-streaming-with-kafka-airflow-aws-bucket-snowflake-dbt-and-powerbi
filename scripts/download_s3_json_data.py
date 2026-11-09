@@ -37,6 +37,7 @@ def download_json_from_s3() -> list:
         s3_client.download_file(bucket_name, key, local_json_file_name)
         print(f"S3 Json File Downloaded: {local_json_file_name}")
 
-        DOWNLOADED_FILES.append(local_json_file_name)       
+        DOWNLOADED_FILES.append(str(local_json_file_name)) 
+        print(local_json_file_name)  
 
     return DOWNLOADED_FILES
