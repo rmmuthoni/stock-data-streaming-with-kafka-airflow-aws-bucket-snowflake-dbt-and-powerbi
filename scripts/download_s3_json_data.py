@@ -31,14 +31,13 @@ def download_json_from_s3(**context) -> None:
 
     for object in stored_objects:
         key = object["Key"]
-        local_json_file_name = DATA_DIR / os.path.basename(key)
+        local_json_file_name = DATA_DIR / Path(key).name  # Use the name of the file from S3 as the local file name
 
         # Download the files and Append to the List
         s3_client.download_file(bucket_name, key, local_json_file_name)
         print(f"S3 Json File Downloaded: {local_json_file_name}")
 
-        DOWNLOADED_FILES.append(str(local_json_file_name)) 
-        print(local_json_file_name)  
+        DOWNLOADED_FILES.append(str(local_json_file_name))  
 
     context['ti'].xcom_push(key='downloaded_s3_files', value=DOWNLOADED_FILES)
     
