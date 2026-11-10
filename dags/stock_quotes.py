@@ -3,6 +3,7 @@ import sys
 
 from airflow.sdk import DAG 
 from airflow.operators.python import PythonOperator
+from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 
 from datetime import datetime, timedelta
 
@@ -43,5 +44,19 @@ with DAG(
         python_callable=upload_s3_json_data_to_snowflake
     )
 
+    task_copy_from_stage_to_table = SQLExecuteQueryOperator(
+        task_id="copy_from_stage_to_table",
+        conn_id="snowflake_default",
+        sql="""
+            COPY INTO STOCK_QUOTES.COMMON.RAW_STOCK_QUOTE_KAFKA_EVENTS(src, file_name)
+                FROM (
+                    SELECT $1, METADATA$FILENAME 
+                    FROM @STOCK_QUOTES.COMMON.RAW_STOCK_QUOTE_STAGING
+                )
+            FILE_FORMAT = (FORMAT_NAME = 'STOCK_QUOTES.COMMON.JSON_FILE_FORMAT')
+            ON_ERROR = 'CONTINUE';
+        """
+    )
+
     # Dependancy
-    task_download_json_from_s3 >> task_upload_json_to_snowflake
+    task_download_json_from_s3 >> task_upload_json_to_snowflake >> task_copy_from_stage_to_table
