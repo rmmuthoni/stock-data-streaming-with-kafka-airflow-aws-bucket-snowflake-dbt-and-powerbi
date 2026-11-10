@@ -12,7 +12,7 @@ dotenv.load_dotenv()
 
 API_KEY = os.getenv("FINHUB_API_KEY")
 API_URL = os.getenv("FINHUB_API_URL")
-SYMBOLS = ["AAPL", "META", "AMZN", "NFLX", "GOOGL"]
+SYMBOLS = ["AAPL", "META", "AMZN", "NFLX", "GOOGL", "NVDA"]
 
 # Set up the Producer
 producer_config = {
@@ -61,4 +61,4 @@ while True:
         if stock_quote:
             producer.produce("stock-quotes", value=json.dumps(stock_quote).encode("utf-8"), callback=delivery_report)
             producer.flush()
-            time.sleep(4)
+    time.sleep(10)
