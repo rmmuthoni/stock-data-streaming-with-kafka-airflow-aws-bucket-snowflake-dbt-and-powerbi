@@ -32,10 +32,14 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   dbt_stock_quotes_transformation:
     # Config indicated by + and applies to all files under models/example/
-    bronze_raw_stock_quotes:
+    bronze:
       +materialized: view
       schema: bronze 
-      
-    silver_stock_quotes:
+
+    silver:
       +materialized: view 
       schema: silver
+
+    gold:
+      +materialized: table 
+      schema: gold
