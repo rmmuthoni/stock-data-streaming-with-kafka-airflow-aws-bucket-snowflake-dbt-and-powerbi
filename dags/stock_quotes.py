@@ -24,7 +24,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id="s3_json_file_to_snowflake_wh",
+    dag_id="ingest_stock_quotes_from_s3_to_snowflake",
     default_args=default_args, 
     description="Downloads JSON data from S3 Bucket and uploads to Snowflake Warehouse", 
     schedule=timedelta(minutes=10),
@@ -39,24 +39,24 @@ with DAG(
         python_callable=download_json_from_s3
     )
 
-    # task_upload_json_to_snowflake = PythonOperator(
-    #     task_id="upload_json_to_snowflake",
-    #     python_callable=upload_s3_json_data_to_snowflake
-    # )
+    task_upload_json_to_snowflake = PythonOperator(
+        task_id="upload_json_to_snowflake",
+        python_callable=upload_s3_json_data_to_snowflake
+    )
 
-    # task_copy_from_stage_to_table = SQLExecuteQueryOperator(
-    #     task_id="copy_from_stage_to_table",
-    #     conn_id="snowflake_default",
-    #     sql="""
-    #         COPY INTO STOCK_QUOTES.COMMON.RAW_STOCK_QUOTE_KAFKA_EVENTS(src, file_name, snowflake_ingest_ts)
-    #             FROM (
-    #                 SELECT $1, METADATA$FILENAME, CURRENT_TIMESTAMP()
-    #                 FROM @STOCK_QUOTES.COMMON.RAW_STOCK_QUOTE_STAGING
-    #             )
-    #         FILE_FORMAT = (FORMAT_NAME = 'STOCK_QUOTES.COMMON.JSON_FILE_FORMAT')
-    #         ON_ERROR = 'CONTINUE';
-    #     """
-    # )
+    task_copy_from_stage_to_table = SQLExecuteQueryOperator(
+        task_id="copy_from_stage_to_table",
+        conn_id="snowflake_default",
+        sql="""
+            COPY INTO STOCK_QUOTES.COMMON.RAW_STOCK_QUOTE_KAFKA_EVENTS(src, file_name, snowflake_ingest_ts)
+                FROM (
+                    SELECT $1, METADATA$FILENAME, CURRENT_TIMESTAMP()
+                    FROM @STOCK_QUOTES.COMMON.RAW_STOCK_QUOTE_STAGING
+                )
+            FILE_FORMAT = (FORMAT_NAME = 'STOCK_QUOTES.COMMON.JSON_FILE_FORMAT')
+            ON_ERROR = 'CONTINUE';
+        """
+    )
 
     # Dependancy
-    task_download_json_from_s3 # >> task_upload_json_to_snowflake >> task_copy_from_stage_to_table
+    task_download_json_from_s3 >> task_upload_json_to_snowflake  >> task_copy_from_stage_to_table
