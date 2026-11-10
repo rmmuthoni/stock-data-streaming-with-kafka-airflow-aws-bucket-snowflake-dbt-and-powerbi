@@ -27,7 +27,7 @@ with DAG(
     dag_id="ingest_stock_quotes_from_s3_to_snowflake",
     default_args=default_args, 
     description="Downloads JSON data from S3 Bucket and uploads to Snowflake Warehouse", 
-    schedule=timedelta(minutes=10),
+    schedule=timedelta(minutes=15),
     start_date=datetime(2024, 6, 1), 
     catchup=False,
     tags=["s3", "snowflake", "json", "downlad", "s3 to snowflake"]
