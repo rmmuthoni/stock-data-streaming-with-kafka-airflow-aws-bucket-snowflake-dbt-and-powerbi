@@ -48,9 +48,9 @@ with DAG(
         task_id="copy_from_stage_to_table",
         conn_id="snowflake_default",
         sql="""
-            COPY INTO STOCK_QUOTES.COMMON.RAW_STOCK_QUOTE_KAFKA_EVENTS(src, file_name)
+            COPY INTO STOCK_QUOTES.COMMON.RAW_STOCK_QUOTE_KAFKA_EVENTS(src, file_name, snowflake_ingest_ts)
                 FROM (
-                    SELECT $1, METADATA$FILENAME 
+                    SELECT $1, METADATA$FILENAME, CURRENT_TIMESTAMP()
                     FROM @STOCK_QUOTES.COMMON.RAW_STOCK_QUOTE_STAGING
                 )
             FILE_FORMAT = (FORMAT_NAME = 'STOCK_QUOTES.COMMON.JSON_FILE_FORMAT')

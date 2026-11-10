@@ -41,7 +41,7 @@ while True:
     message_value = message.value().decode("utf-8")
     stock_quote = json.loads(message_value)
     timestamp = stock_quote.get("fetched_at")
-    key = f"{stock_quote.get("symbol")}/{timestamp}.json"
+    key = f"{stock_quote.get("symbol")}/{stock_quote.get("symbol")}-{timestamp}.json"
 
     # Send the Quote to the buecket 
     try: 
