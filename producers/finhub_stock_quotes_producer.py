@@ -61,4 +61,4 @@ while True:
         if stock_quote:
             producer.produce("stock-quotes", value=json.dumps(stock_quote).encode("utf-8"), callback=delivery_report)
             producer.flush()
-            time.sleep(4)
+    time.sleep(10)
