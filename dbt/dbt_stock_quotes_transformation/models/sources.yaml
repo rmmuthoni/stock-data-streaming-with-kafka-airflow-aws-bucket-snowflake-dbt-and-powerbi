@@ -4,3 +4,4 @@ sources:
     schema: common 
     tables:
       - name: raw_stock_quote_kafka_events
+        description: holds the raw stock quotes (in JSON) as streamed in the warehouse
