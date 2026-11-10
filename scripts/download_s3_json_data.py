@@ -27,7 +27,7 @@ def download_json_from_s3(**context) -> None:
     bucket_name = os.getenv("S3_STOCKS_BUCKET_NAME")
 
     # Fetch objects in the bucket
-    stored_objects = s3_client.list_objects(Bucket=os.getenv("S3_STOCKS_BUCKET_NAME")).get("Contents", [])
+    stored_objects = s3_client.list_objects_v2(Prefix="new/", Bucket=os.getenv("S3_STOCKS_BUCKET_NAME")).get("Contents", [])
 
     for object in stored_objects:
         key = object["Key"]
@@ -37,7 +37,24 @@ def download_json_from_s3(**context) -> None:
         s3_client.download_file(bucket_name, key, local_json_file_name)
         print(f"S3 Json File Downloaded: {local_json_file_name}")
 
-        DOWNLOADED_FILES.append(str(local_json_file_name))  
+        DOWNLOADED_FILES.append(str(local_json_file_name)) 
+
+        # Afrer Download, Delete the file from the S3 Bucket and Archive(Copy) it to the "archive" folder 
+        archive_key = f"archive/{Path(key).name}" 
+        source_key = f"new/{Path(key).name}"
+
+        s3_client.copy_object(
+            Bucket=bucket_name, 
+            CopySource={
+                'Bucket': bucket_name,
+                'Key': source_key
+            },
+            Key=archive_key
+        )
+        print(f"Copied S3 File to Archive: {archive_key}")
+
+        s3_client.delete_object(Bucket=bucket_name, Key=source_key)
+        print(f"Deleted S3 File from Bucket: {source_key}")
 
     context['ti'].xcom_push(key='downloaded_s3_files', value=DOWNLOADED_FILES)
     
