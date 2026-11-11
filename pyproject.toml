@@ -15,6 +15,7 @@ dependencies = [
     "dbt-core>=1.12.6",
     "dbt-snowflake>=1.12.5",
     "requests>=2.34.2",
+    "sqlfmt>=0.0.3",
 ]
 
 [project.scripts]
