@@ -12,7 +12,7 @@ dotenv.load_dotenv()
 
 API_KEY = os.getenv("FINHUB_API_KEY")
 API_URL = os.getenv("FINHUB_API_URL")
-SYMBOLS = ["AAPL", "META", "AMZN", "NFLX", "GOOGL", "NVDA"]
+SYMBOLS = ["AAPL", "NVDA", "MSFT", "AMZN", "SPCX", "GOOGL", "GOOG", "META", "AVGO", "TSLA"]
 
 # Set up the Producer
 producer_config = {
