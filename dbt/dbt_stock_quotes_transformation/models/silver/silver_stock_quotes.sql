@@ -1,8 +1,30 @@
+{{
+  config(
+    materialized = 'incremental',
+    unique_key = 'file_name',
+    incremental_strategy = 'merge',
+    on_schema_change = 'sync_all_columns'
+    )
+}}
+-- Merge strategy so that records are updated rather than treated as new records 
+-- Using file name (which is immutable) to track unique records
 WITH raw_stock_quotes_json AS (
     SELECT 
-        * 
+        *,
+        ROW_NUMBER() OVER(PARTITION BY file_name ORDER BY snowflake_ingest_ts DESC) AS record_rank
     FROM {{ ref('bronze_raw_stock_quotes') }}
+    {% if is_incremental() %}
+    WHERE snowflake_ingest_ts > (SELECT MAX(snowflake_ingest_ts) FROM {{ this }})
+    {% endif %}
 ), 
+
+-- Remove possible duplicate records commong with Kafka Stream Rebalancing
+deduplicate_raw_stock_quotes_json AS (
+    SELECT 
+        *
+    FROM raw_stock_quotes_json 
+    WHERE record_rank = 1
+),
 
 -- Extract and structure the raw stock quotes from JSON to a more structured format
 structured_raw_stock_quotes AS (
@@ -18,7 +40,7 @@ structured_raw_stock_quotes AS (
         TO_TIMESTAMP_NTZ(src:t::NUMBER) AS market_time,
         src:fetched_at::TIMESTAMP_NTZ AS fetched_at,
         src:source_system::STRING AS source_system
-    FROM raw_stock_quotes_json
+    FROM deduplicate_raw_stock_quotes_json
 ),
 
 -- Clean Floating Point Values to 2 Decimal Places
