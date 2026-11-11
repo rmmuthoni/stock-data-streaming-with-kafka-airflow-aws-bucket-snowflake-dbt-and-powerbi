@@ -14,7 +14,7 @@ WITH raw_stock_quotes_json AS (
         ROW_NUMBER() OVER(PARTITION BY file_name ORDER BY snowflake_ingest_ts DESC) AS record_rank
     FROM {{ ref('bronze_raw_stock_quotes') }}
     {% if is_incremental() %}
-    WHERE snowflake_ingest_ts > (SELECT MAX(snowflake_ingest_ts) FROM {{ this }})
+    WHERE snowflake_ingest_ts > (SELECT MAX(snowflake_ingest_ts) FROM {{ this }} AS t)
     {% endif %}
 ), 
 
@@ -39,7 +39,9 @@ structured_raw_stock_quotes AS (
         src:symbol::STRING AS symbol,
         TO_TIMESTAMP_NTZ(src:t::NUMBER) AS market_time,
         src:fetched_at::TIMESTAMP_NTZ AS fetched_at,
-        src:source_system::STRING AS source_system
+        src:source_system::STRING AS source_system,
+        file_name,
+        snowflake_ingest_ts
     FROM deduplicate_raw_stock_quotes_json
 ),
 
@@ -57,7 +59,9 @@ cleaned_stock_quotes AS (
         market_time,
         TO_DATE(market_time) AS market_day,
         fetched_at,
-        TRIM(source_system)
+        TRIM(source_system) AS source_system,
+        file_name,
+        snowflake_ingest_ts
     FROM structured_raw_stock_quotes
 ),
 
