@@ -55,6 +55,8 @@ with DAG(
                 )
             FILE_FORMAT = (FORMAT_NAME = 'STOCK_QUOTES.COMMON.JSON_FILE_FORMAT')
             ON_ERROR = 'CONTINUE';
+
+            REMOVE @STOCK_QUOTES.COMMON.RAW_STOCK_QUOTE_STAGING;
         """
     )
 
