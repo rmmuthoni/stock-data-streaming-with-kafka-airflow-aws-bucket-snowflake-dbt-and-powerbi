@@ -1,7 +1,7 @@
 {{
   config(
     materialized = 'incremental',
-    unique_key = 'fetched_at',
+    unique_key = 'symbol',
     incremental_strategy = 'merge'
     )
 }}
