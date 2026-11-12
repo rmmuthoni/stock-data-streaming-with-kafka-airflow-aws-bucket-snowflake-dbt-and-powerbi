@@ -20,7 +20,7 @@ latest_market_time AS (
         market_day,
         symbol
     FROM gold_stock_quotes
-    WHERE symbol = 'NFLX'
+    WHERE symbol = 'AAPL'
     GROUP BY market_day, symbol
 ),
 
