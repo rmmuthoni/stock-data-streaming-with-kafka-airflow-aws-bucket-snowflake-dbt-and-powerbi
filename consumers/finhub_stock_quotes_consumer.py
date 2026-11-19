@@ -29,28 +29,34 @@ consumer.subscribe(["stock-quotes"])
 print("Consumer is running and subscribed to topic: stock-quotes")
 
 # Consume new topics topics
-while True:
-    message = consumer.poll(timeout=1.0)
-    if message is None:
-        continue 
-    if message.error():
-        print("Ecountered an Error", message.error())
-        continue 
+try:
+    while True:
+        message = consumer.poll(timeout=1.0)
+        if message is None:
+            continue 
+        if message.error():
+            print("Ecountered an Error", message.error())
+            continue 
 
-    # If no errors, read the message stream 
-    message_value = message.value().decode("utf-8")
-    stock_quote = json.loads(message_value)
-    timestamp = stock_quote.get("fetched_at")
-    key = f"{stock_quote.get("symbol")}/{timestamp}.json"
+        # If no errors, read the message stream 
+        message_value = message.value().decode("utf-8")
+        stock_quote = json.loads(message_value)
+        timestamp = stock_quote.get("fetched_at")
+        key = f"new/{stock_quote.get("symbol")}-{timestamp}.json"
 
-    # Send the Quote to the buecket 
-    try: 
-        s3_client.put_object(
-            Bucket=bucket_name,
-            Key=key,
-            Body=json.dumps(stock_quote),
-            ContentType="application/json"
-        )
-        print(f"Stock Quote {key} has been put in the Bucket: {bucket_name}")
-    except Exception as e:
-        print("Error Occured While Putting into S3 Bucket", e)
+        # Send the Quote to the buecket 
+        try: 
+            s3_client.put_object(
+                Bucket=bucket_name,
+                Key=key,
+                Body=json.dumps(stock_quote),
+                ContentType="application/json"
+            )
+            print(f"Stock Quote {key} has been put in the Bucket: {bucket_name}")
+        except Exception as e:
+            print("Error Occured While Putting into S3 Bucket", e)
+
+except KeyboardInterrupt:
+    print("Consumer is shutting down...")
+finally:
+    consumer.close()

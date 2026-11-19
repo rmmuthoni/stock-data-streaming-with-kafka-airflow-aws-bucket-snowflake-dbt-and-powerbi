@@ -1,0 +1,7 @@
+sources:
+  - name: source
+    database: prod_stock_market 
+    schema: staging 
+    tables:
+      - name: raw_stock_market_data
+        description: holds the raw stock quotes (in JSON) as streamed in the warehouse
