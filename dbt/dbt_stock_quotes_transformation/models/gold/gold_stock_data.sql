@@ -1,7 +1,7 @@
 {{
   config(
     materialized = 'incremental',
-    unique_key = 'file_name',
+    unique_key = 'record_id',
     incremental_strategy = 'merge',
     on_schema_change = 'append_new_columns'
     )
@@ -10,9 +10,9 @@
 WITH silver_stock_quotes AS (
     SELECT 
         *
-    FROM {{ ref('silver_stock_quotes') }}
+    FROM {{ ref('silver_stock_data') }}
     {% if is_incremental() %}
-    WHERE snowflake_ingest_ts > (SELECT MAX(snowflake_ingest_ts) FROM {{ this }})
+    WHERE record_id > (SELECT MAX(record_id) FROM {{ this }})
     {% endif %}
 )
 

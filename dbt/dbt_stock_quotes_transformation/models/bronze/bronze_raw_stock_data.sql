@@ -1,4 +1,4 @@
-{{
+{# {{
   config(
     materialized = 'incremental',
     incremental_strategy = 'append',
@@ -13,4 +13,4 @@ SELECT
 FROM {{ source('source', 'raw_stock_quote_kafka_events') }}
 {% if is_incremental() %}
 WHERE snowflake_ingest_ts > (SELECT MAX(snowflake_ingest_ts) FROM {{ this }})
-{% endif %}
+{% endif %} #}

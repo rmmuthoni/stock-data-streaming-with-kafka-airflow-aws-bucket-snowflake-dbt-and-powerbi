@@ -1,7 +1,7 @@
 {{
   config(
     materialized = 'incremental',
-    unique_key = 'file_name',
+    unique_key = 'record_id',
     incremental_strategy = 'merge',
     on_schema_change = 'sync_all_columns'
     )
@@ -12,9 +12,9 @@ WITH raw_stock_quotes_json AS (
     SELECT 
         *,
         ROW_NUMBER() OVER(PARTITION BY file_name ORDER BY snowflake_ingest_ts DESC) AS record_rank
-    FROM {{ ref('bronze_raw_stock_quotes') }}
+    FROM {{ ref('bronze_stock_data') }}
     {% if is_incremental() %}
-    WHERE snowflake_ingest_ts > (SELECT MAX(snowflake_ingest_ts) FROM {{ this }} AS t)
+    WHERE record_id > (SELECT MAX(record_id) FROM {{ this }})
     {% endif %}
 ), 
 
@@ -41,6 +41,7 @@ structured_raw_stock_quotes AS (
         src:fetched_at::TIMESTAMP_NTZ AS fetched_at,
         src:source_system::STRING AS source_system,
         file_name,
+        record_id,
         snowflake_ingest_ts
     FROM deduplicate_raw_stock_quotes_json
 ),
@@ -61,7 +62,8 @@ cleaned_stock_quotes AS (
         fetched_at,
         TRIM(source_system) AS source_system,
         file_name,
-        snowflake_ingest_ts
+        snowflake_ingest_ts,
+        record_id
     FROM structured_raw_stock_quotes
 ),
 

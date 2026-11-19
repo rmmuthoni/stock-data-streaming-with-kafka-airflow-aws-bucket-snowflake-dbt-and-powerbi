@@ -2,40 +2,43 @@
 WITH gold_stock_quotes AS (
     SELECT 
         *
-    FROM STOCK_QUOTES.dbt_rogers_gold.gold_stock_quotes
+    FROM DEV_STOCK_MARKET.dbt_rogers_gold.gold_stock_data
     
-    WHERE market_day = (SELECT MAX(market_day) FROM STOCK_QUOTES.dbt_rogers_gold.gold_daily_summary)
+    WHERE market_day = (SELECT MAX(market_day) FROM DEV_STOCK_MARKET.dbt_rogers_gold.gold_daily_summary)
     
 ),
 
 latest_market_time AS (
     SELECT 
-        MAX(fetched_at) AS fetched_at,
-        market_day,
+        MAX(record_id) AS record_id,
+        --market_day,
         symbol
     FROM gold_stock_quotes
-    GROUP BY market_day, symbol
+    GROUP BY symbol
 ),
 
 daily_summary AS (
     SELECT 
-        l.fetched_at,
-        current_price,
+        --l.fetched_at,
+        g.record_id,
+        g.market_day,
         l.symbol,
-        l.market_day,
+        current_price,
+        
         prev_day_close,
         day_high,
         day_low,
         day_open,
-        change_percent,
         change_amount,
-        source_system,
-        file_name,
+        change_percent,
+        
+        --source_system,
+        --file_name,
         market_time,
-        snowflake_ingest_ts
+        --snowflake_ingest_ts
     FROM latest_market_time l
     LEFT JOIN gold_stock_quotes g
-        ON l.fetched_at = g.fetched_at
+        ON l.record_id = g.record_id
 )
 
 SELECT * FROM daily_summary

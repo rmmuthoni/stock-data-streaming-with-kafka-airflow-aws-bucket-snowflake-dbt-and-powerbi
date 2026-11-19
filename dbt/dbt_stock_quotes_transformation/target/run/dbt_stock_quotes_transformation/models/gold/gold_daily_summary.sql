@@ -1,30 +1,18 @@
--- back compat for old kwarg name
-  
-  begin;
+begin;
     
         
-            
-            
-            
-            
         
-    
+        delete from DEV_STOCK_MARKET.dbt_rogers_gold.gold_daily_summary as DBT_INTERNAL_DEST
+        where (record_id) in (
+            select distinct record_id
+            from DEV_STOCK_MARKET.dbt_rogers_gold.gold_daily_summary__dbt_tmp as DBT_INTERNAL_SOURCE
+        );
 
     
 
-    merge into STOCK_QUOTES.dbt_rogers_gold.gold_daily_summary as DBT_INTERNAL_DEST
-        using STOCK_QUOTES.dbt_rogers_gold.gold_daily_summary__dbt_tmp as DBT_INTERNAL_SOURCE
-        on ((DBT_INTERNAL_SOURCE.symbol = DBT_INTERNAL_DEST.symbol))
-
-    
-    when matched then update set
-        "FETCHED_AT" = DBT_INTERNAL_SOURCE."FETCHED_AT","CURRENT_PRICE" = DBT_INTERNAL_SOURCE."CURRENT_PRICE","SYMBOL" = DBT_INTERNAL_SOURCE."SYMBOL","MARKET_DAY" = DBT_INTERNAL_SOURCE."MARKET_DAY","PREV_DAY_CLOSE" = DBT_INTERNAL_SOURCE."PREV_DAY_CLOSE","DAY_HIGH" = DBT_INTERNAL_SOURCE."DAY_HIGH","DAY_LOW" = DBT_INTERNAL_SOURCE."DAY_LOW","DAY_OPEN" = DBT_INTERNAL_SOURCE."DAY_OPEN","CHANGE_PERCENT" = DBT_INTERNAL_SOURCE."CHANGE_PERCENT","CHANGE_AMOUNT" = DBT_INTERNAL_SOURCE."CHANGE_AMOUNT","SOURCE_SYSTEM" = DBT_INTERNAL_SOURCE."SOURCE_SYSTEM","FILE_NAME" = DBT_INTERNAL_SOURCE."FILE_NAME","MARKET_TIME" = DBT_INTERNAL_SOURCE."MARKET_TIME","SNOWFLAKE_INGEST_TS" = DBT_INTERNAL_SOURCE."SNOWFLAKE_INGEST_TS"
-    
-
-    when not matched then insert
-        ("FETCHED_AT", "CURRENT_PRICE", "SYMBOL", "MARKET_DAY", "PREV_DAY_CLOSE", "DAY_HIGH", "DAY_LOW", "DAY_OPEN", "CHANGE_PERCENT", "CHANGE_AMOUNT", "SOURCE_SYSTEM", "FILE_NAME", "MARKET_TIME", "SNOWFLAKE_INGEST_TS")
-    values
-        ("FETCHED_AT", "CURRENT_PRICE", "SYMBOL", "MARKET_DAY", "PREV_DAY_CLOSE", "DAY_HIGH", "DAY_LOW", "DAY_OPEN", "CHANGE_PERCENT", "CHANGE_AMOUNT", "SOURCE_SYSTEM", "FILE_NAME", "MARKET_TIME", "SNOWFLAKE_INGEST_TS")
-
-;
+    insert into DEV_STOCK_MARKET.dbt_rogers_gold.gold_daily_summary ("RECORD_ID", "MARKET_DAY", "SYMBOL", "CURRENT_PRICE", "PREV_DAY_CLOSE", "DAY_HIGH", "DAY_LOW", "DAY_OPEN", "CHANGE_AMOUNT", "CHANGE_PERCENT", "MARKET_TIME")
+    (
+        select "RECORD_ID", "MARKET_DAY", "SYMBOL", "CURRENT_PRICE", "PREV_DAY_CLOSE", "DAY_HIGH", "DAY_LOW", "DAY_OPEN", "CHANGE_AMOUNT", "CHANGE_PERCENT", "MARKET_TIME"
+        from DEV_STOCK_MARKET.dbt_rogers_gold.gold_daily_summary__dbt_tmp
+    );
     commit;
