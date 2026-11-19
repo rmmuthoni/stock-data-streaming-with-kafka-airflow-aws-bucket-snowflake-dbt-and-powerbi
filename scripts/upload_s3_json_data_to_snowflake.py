@@ -27,7 +27,7 @@ def upload_s3_json_data_to_snowflake(**context) -> None:
                     print(f"{str(local_file_path)} does not exists: Proceeding")
                     continue
                 # Put the Json File into the Snowflake STAGE
-                put_sql = f"PUT file://{str(local_file_path)} @STOCK_QUOTES.COMMON.RAW_STOCK_QUOTE_STAGING AUTO_COMPRESS=TRUE;"
+                put_sql = f"PUT file://{str(local_file_path)} @PROD_STOCK_MARKET.STAGING.STG_RAW_STOCK_MARKET_DATA AUTO_COMPRESS=TRUE;"
                 cursor.execute(put_sql) 
 
     # After successfull upload, we clean the folder 
