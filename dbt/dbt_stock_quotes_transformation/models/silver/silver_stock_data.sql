@@ -71,4 +71,4 @@ finally AS (
     SELECT * FROM cleaned_stock_quotes
 )
 
-SELECT * FROM raw_stock_quotes_json
+SELECT * FROM finally
