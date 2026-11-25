@@ -11,7 +11,7 @@ WITH gold_stock_quotes AS (
         *
     FROM {{ ref('gold_stock_data') }}
     {% if is_incremental() %}
-    WHERE market_day = (SELECT MAX(market_day) FROM {{ this }})
+    WHERE market_day >= (SELECT MAX(market_day) FROM {{ this }})
     {% endif %}
 ),
 
