@@ -1,7 +1,7 @@
 {{
   config(
     materialized = 'incremental',
-    unique_key = 'symbol',
+    unique_key = ['symbol', 'market_day'],
     incremental_strategy = 'merge',
     on_schema_change = 'sync_all_columns'
     )
