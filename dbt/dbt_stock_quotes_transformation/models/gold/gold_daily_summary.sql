@@ -1,8 +1,8 @@
 {{
   config(
     materialized = 'incremental',
-    unique_key = 'record_id',
-    incremental_strategy = 'delete+insert',
+    unique_key = ['symbol', 'market_day'],
+    incremental_strategy = 'merge',
     on_schema_change = 'sync_all_columns'
     )
 }}
@@ -11,7 +11,7 @@ WITH gold_stock_quotes AS (
         *
     FROM {{ ref('gold_stock_data') }}
     {% if is_incremental() %}
-    WHERE market_day = (SELECT MAX(market_day) FROM {{ this }})
+    WHERE market_day >= (SELECT COALESCE(MAX(market_day), '1970-01-01') FROM {{ this }}) 
     {% endif %}
 ),
 
