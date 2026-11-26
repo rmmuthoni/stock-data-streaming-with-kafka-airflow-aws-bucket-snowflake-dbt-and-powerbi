@@ -14,6 +14,7 @@ dependencies = [
     "confluent-kafka>=2.16.1",
     "dbt-core>=1.12.6",
     "dbt-snowflake>=1.12.5",
+    "finnhub-python>=2.4.30",
     "requests>=2.34.2",
     "sqlfmt>=0.0.3",
 ]

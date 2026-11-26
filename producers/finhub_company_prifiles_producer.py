@@ -11,7 +11,7 @@ from typing import Any
 dotenv.load_dotenv()
 
 API_KEY = os.getenv("FINHUB_API_KEY")
-API_URL = os.getenv("FINHUB_API_URL")
+API_URL = os.getenv("FINHUB_API_COMPANY_PROFILE_URL")
 SYMBOLS = ["AAPL", "NVDA", "MSFT", "AMZN", "SPCX", "GOOGL", "GOOG", "META", "AVGO", "TSLA", "AMD", "INTC", "NFLX", "ADBE", "CRM", "PYPL", "CSCO", "ORCL", "QCOM", "TXN"]
 
 # Set up the Producer
@@ -32,7 +32,7 @@ def delivery_report(error, message) -> Any:
 
 # Fetch Stock Data from Finnhub API 
 def fetch_stock_data(symbol: str) -> Any:
-    """Fetch stock data for a given symbol from Finnhub API."""
+    """Fetch company profile data from Finnhub API for a given stock symbol."""
     TARGET_URL = f"{API_URL}?symbol={symbol}&token={API_KEY}"
 
     try:
@@ -54,11 +54,13 @@ def fetch_stock_data(symbol: str) -> Any:
         print(data)
         return data
 
-# Stream 
-while True:
-    for symbol in SYMBOLS:
-        stock_quote = fetch_stock_data(symbol=symbol)
-        if stock_quote:
-            producer.produce("stock-quotes", value=json.dumps(stock_quote).encode("utf-8"), callback=delivery_report)
-            producer.flush()
-    time.sleep(10)
+
+
+# # Stream 
+# while True:
+#     for symbol in SYMBOLS:
+#         stock_quote = fetch_stock_data(symbol=symbol)
+#         if stock_quote:
+#             producer.produce("stock-quotes", value=json.dumps(stock_quote).encode("utf-8"), callback=delivery_report)
+#             producer.flush()
+#     time.sleep(10)

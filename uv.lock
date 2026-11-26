@@ -1025,6 +1025,18 @@ standard-no-fastapi-cloud-cli = [
 ]
 
 [[package]]
+name = "finnhub-python"
+version = "2.4.30"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ab/66/e8cfc18ce2a58ebb9e02b3aed0b94354d2e544f7bb7dfcc3de113a248ea0/finnhub_python-2.4.30.tar.gz", hash = "sha256:2291b7a905eb36e3c6dc2bd06f5f047ef631f0203479b8d7950e00f4f93c1cd3", size = 13731, upload-time = "2026-11-05T14:38:07.243Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/43/9b/75d41a253c08f454c55ebec09a790eab567f513bc1e10275a30dbd0d3ef1/finnhub_python-2.4.30-py3-none-any.whl", hash = "sha256:9d872c63f2ebc1f2502909768b5fb351073bdf8965c73974187fbc3604289996", size = 12112, upload-time = "2026-11-05T14:38:06.135Z" },
+]
+
+[[package]]
 name = "fsspec"
 version = "2026.9.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3022,6 +3034,7 @@ dependencies = [
     { name = "confluent-kafka" },
     { name = "dbt-core" },
     { name = "dbt-snowflake" },
+    { name = "finnhub-python" },
     { name = "requests" },
     { name = "sqlfmt" },
 ]
@@ -3034,6 +3047,7 @@ requires-dist = [
     { name = "confluent-kafka", specifier = ">=2.16.1" },
     { name = "dbt-core", specifier = ">=1.12.6" },
     { name = "dbt-snowflake", specifier = ">=1.12.5" },
+    { name = "finnhub-python", specifier = ">=2.4.30" },
     { name = "requests", specifier = ">=2.34.2" },
     { name = "sqlfmt", specifier = ">=0.0.3" },
 ]
