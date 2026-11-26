@@ -1,0 +1,3 @@
+boto3>=1.43.126,
+finnhub-python>=2.4.30,
+requests>=2.34.2,
